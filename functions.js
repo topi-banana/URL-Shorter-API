@@ -79,49 +79,6 @@ const db = {
     }
 }
 
-import roman2hiragana from './r2h.json' assert { type: 'json' }
-const r2h = (roman) => {
-	var i, iz, match, regex,
-		hiragana = '', table = roman2hiragana;
-	regex = new RegExp((function(table){
-		var key,
-		s = '^(?:';
-		for (key in table) if (table.hasOwnProperty(key)) {
-			s += key + '|';
-		}
-		return s + '(?:n(?![aiueo]|y[aiueo]|$))|' + '([^aiueon])\\1)';
-	})(table));
-	for (i = 0, iz = roman.length; i < iz; ++i) {
-		if (match = roman.slice(i).match(regex)) {
-			if (match[0] === 'n') {
-				hiragana += 'ん';
-			} else if (/^([^n])\1$/.test(match[0])) {
-				hiragana += 'っ';
-				--i;
-			} else {
-				hiragana += table[match[0]];
-			}
-			i += match[0].length - 1;
-		} else {
-			hiragana += roman[i];
-		}
-	}
-	return hiragana;
-}
-
-const kanaToHira = (str) => {
-    return str.replace(/[\u30a1-\u30f6]/g, function(match) {
-        var chr = match.charCodeAt(0) - 0x60;
-        return String.fromCharCode(chr);
-    });
-}
-const hiraToKana = (str) => {
-    return str.replace(/[\u3041-\u3096]/g, function(match) {
-        var chr = match.charCodeAt(0) + 0x60;
-        return String.fromCharCode(chr);
-    });
-}
-
 import util from 'util'
 import childProcess from 'child_process'
 const exec = util.promisify(childProcess.exec)
@@ -162,8 +119,13 @@ const pr = {
 }
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
+import crypto from 'crypto'
+const getRandom = (N=16) => {
+    const S="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    return Array.from(crypto.randomFillSync(new Uint8Array(N))).map((n)=>S[n%S.length]).join('')
+}
 const __filename = fileURLToPath(import.meta.url);
 
 const __dirname = path.dirname(__filename);
 
-export { db, r2h, kanaToHira, hiraToKana, exec, sleep, pr, __dirname }
+export { db, exec, sleep, getRandom, pr, __dirname }
