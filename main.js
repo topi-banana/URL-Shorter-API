@@ -6,7 +6,7 @@ dotenv.config()
 import { db, exec, sleep, getRandom, pr, __dirname } from './functions.js'
 
 app.use((req,res,next)=>{
-    console.log( `${(new Date()).toLocaleString()}\tGET\t${req.originalUrl}` )
+    pr.info(req.originalUrl,`GET`)
     next()
 })
 
@@ -64,5 +64,5 @@ app.get('/get/:id', async (req, res) => {
 
 app.listen(8080, async () => {
     await db.init()
-    console.log( `${(new Date()).toLocaleString()}\tstart` )
+    pr.info(`Start`,`HTTP`)
 })
